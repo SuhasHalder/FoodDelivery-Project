@@ -1,0 +1,7 @@
+# BACKEND - IGNORE
+Backend/node_modules/
+Backend/.env
+
+# FRONTEND - IGNORE
+Frontend/info.html
+Frontend/info-style.css
