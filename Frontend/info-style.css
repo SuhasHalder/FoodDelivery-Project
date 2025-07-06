@@ -1,0 +1,102 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #fafafa;
+  color: #222;
+  line-height: 1.7;
+}
+
+.top-header {
+  background-color: #fa5205;
+  color: white;
+  padding: 50px 20px;
+  text-align: center;
+  border-bottom: 5px solid #b10202;
+}
+
+.top-header h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.top-header p {
+  font-size: 18px;
+}
+
+.container {
+  max-width: 950px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.container section {
+  margin-bottom: 50px;
+}
+
+.container h2 {
+  color: #003366;
+  font-size: 24px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+}
+
+.container p, .contact-list li {
+  font-size: 16px;
+  color: #333;
+}
+
+.contact-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.contact-list li {
+  margin-bottom: 8px;
+}
+
+.main-footer {
+  background-color: #003366;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+section#contact section {
+  margin-top: 25px;
+  padding: 15px 20px;
+  background-color: #f1f1f1;
+  border-left: 4px solid #ff4d4d;
+  border-radius: 6px;
+}
+
+section#contact h3 {
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+section#contact ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 5px;
+}
+
+section#contact ul li {
+  margin-bottom: 6px;
+}
+
+section#contact a {
+  color: #0073e6;
+  text-decoration: none;
+}
+
+section#contact a:hover {
+  text-decoration: underline;
+}
