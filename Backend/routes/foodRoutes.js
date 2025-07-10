@@ -3,9 +3,6 @@ const router = express.Router();
 const foodController = require("../controllers/foodController");
 const authController = require("../controllers/authController");
 
-// router.post("/t foodController.createTour);
-// router.get("/t foodController.getAllTours);
-
 router
     .route("/")
     .post (foodController.createFood)

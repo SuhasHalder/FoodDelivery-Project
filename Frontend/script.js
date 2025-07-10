@@ -77,12 +77,63 @@ const signupSubmit = document.getElementById('signup-submit');
 const clearCartBtn = document.getElementById('clear-cart');
 const checkoutBtn = document.getElementById('checkout-btn');
 
+const accountSection = document.getElementById('account-section');
+const accountDetails = document.getElementById('account-details');
+const orderHistory = document.getElementById('order-history');
+
+
 // Initialize the app
 function init() {
   renderRestaurants();
   setupEventListeners();
   updateCartCount();
 }
+
+function updateAuthState() {
+  if (currentUser) {
+    loginBtn.textContent = currentUser.name || 'My Account';
+    signupBtn.style.display = 'none';
+    loginBtn.onclick = () => showAccount();
+  }
+}
+
+function showAccount() {
+  accountSection.style.display = 'block';
+  loginModal.style.display = 'none';
+  signupModal.style.display = 'none';
+  cartModal.style.display = 'none';
+
+  accountDetails.innerHTML = `
+    <p><strong>Name:</strong> ${currentUser.name}</p>
+    <p><strong>Email:</strong> ${currentUser.email}</p>
+  `;
+
+  // Fetch orders from backend
+  fetch('http://localhost:5000/api/v1/orders/user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: currentUser.email })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.orders.length) {
+      orderHistory.innerHTML = data.orders.map(order => `
+        <div style="padding: 15px; border: 1px solid #ddd; margin-bottom: 15px; border-radius: 8px;">
+          <p><strong>Status:</strong> ${order.status}</p>
+          <p><strong>Total:</strong> ₹${order.total}</p>
+          <p><strong>Items:</strong> ${order.items.map(i => i.name + ' (x' + i.quantity + ')').join(', ')}</p>
+        </div>
+      `).join('');
+    } else {
+      orderHistory.innerHTML = `<p>No orders found.</p>`;
+    }
+  })
+  .catch(err => {
+    orderHistory.innerHTML = `<p>Error loading orders</p>`;
+    console.error(err);
+  });
+}
+
 
 // Render restaurants to the page
 function renderRestaurants() {
@@ -340,28 +391,35 @@ function loginUser() {
     return;
   }
 
-  fetch('http://localhost:5000/api/login', {
+  fetch('http://localhost:5000/api/v1/auth/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include', //Required if backend sets cookies
     body: JSON.stringify({ email, password })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      currentUser = { name: data.name || email };
+    .then(async res => {
+      const data = await res.json();
+      console.log("Full Login Response:", data);
+      console.log("HTTP Status:", res.status);
+
+      if (!res.ok || !data.success) {
+        console.error("Login backend error:", data.message);
+        showNotification(data.message || 'Login failed');
+        return;
+      }
+
+      currentUser = data.data.user;
       showNotification('Login successful!');
       loginModal.style.display = 'none';
       updateAuthState();
-    } else {
-      showNotification('Invalid credentials');
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    showNotification('Login failed');
-  });
+    })
+    .catch(err => {
+      console.error('Login fetch error:', err);
+      showNotification('Network or server error');
+    });
 }
-
 
 // Signup user
 function signupUser() {
@@ -375,30 +433,42 @@ function signupUser() {
     showNotification('Please fill in all fields');
     return;
   }
+
   if (password !== confirm) {
     showNotification('Passwords do not match');
     return;
   }
 
-  fetch('http://localhost:5000/api/signup', {
+  fetch('http://localhost:5000/api/v1/auth/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // This is REQUIRED if your backend sends cookies
     body: JSON.stringify({ name, email, phone, password })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      currentUser = { name, email };
+    .then(async res => {
+      const data = await res.json();
+      console.log("Full Signup Response:", data);
+      console.log("HTTP Status:", res.status);
+
+      if (!res.ok || !data.success) {
+        // Log and show backend error
+        console.error("Signup backend error:", data.message);
+        showNotification(data.message || 'Signup failed');
+        return;
+      }
+
+      currentUser = data.data.user;
       showNotification('Account created successfully!');
       signupModal.style.display = 'none';
       updateAuthState();
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    showNotification('Signup failed');
-  });
+    })
+    .catch(err => {
+      console.error('Signup fetch error:', err);
+      showNotification('Network or server error');
+    });
 }
+
+
 
 
 // Update authentication state
@@ -406,8 +476,10 @@ function updateAuthState() {
   if (currentUser) {
     loginBtn.textContent = currentUser.name || 'My Account';
     signupBtn.style.display = 'none';
+    loginBtn.onclick = showAccount;
   }
 }
+
 
 // Clear cart
 function clearCart() {
@@ -432,7 +504,7 @@ function checkout() {
 
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  fetch('http://localhost:5000/api/checkout', {
+  fetch('http://localhost:5000/api/v1/orders/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cart, user: currentUser })

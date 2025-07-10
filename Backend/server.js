@@ -1,8 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/db");
 const foodRoutes = require("./routes/foodRoutes");
 const authRoutes = require("./routes/authRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const orderRoutes = require('./routes/orderRoutes');
 const morgan = require("morgan")
 require("dotenv").config();
 
@@ -15,172 +17,19 @@ const PORT = process.env.PORT;
 
 connectDB();
 
-// app.use(cors({                 (//for frontend & backend connection.)
-//   origin : "*",
-//   credentials : true,
-// }));
-
-
-// const myDetails = {
-//   name: "arnab",
-//   hometown: "falta",
-//   degree: "B.Tech",
-//   email: "arnab@gmail.com",
-// };
-
-// app.get("/me", (req, res) => {
-//   res.status(200).json({
-//     status: "success",
-//     message: "Data fetched successfully",
-//     data: myDetails,
-//   });
-// });
-
-// const allProducts = [
-//   {
-//     name: "Product 1",
-//     price: 100,
-//     quantity: 10,
-//   },
-//   {
-//     name: "Product 2",
-//     price: 200,
-//     quantity: 20,
-//   },
-//   {
-//     name: "Product 3",
-//     price: 300,
-//     quantity: 30,
-//   },
-// ];
-
-// const getAllProducts = (req, res) => {
-//   res.status(200).json({
-//     status: "success",
-//     message: "Data fetched successfully",
-//     data: allProducts,
-//   });
-// };
-
-// const createProduct = (req, res) => {
-//   const product = req.body;
-//   let a = allProducts.push(product);
-//   console.log(a);
-//   console.log(allProducts);
-
-//   res.status(201).json({
-//     status: "success",
-//     message: "Product created successfully",
-//     data: product,
-//   });
-// };
-
-// const getProductById = (req, res) => {
-//   const { id } = req.params;
-
-//   if (id >= allProducts.length) {
-//     res.status(404).json({
-//       status: "error",
-//       message: "product not found",
-//     });
-//     return;
-//   } else {
-//     const product = allProducts[id];
-//     console.log(product);
-//     res.status(200).json({
-//       status: "success",
-//       message: "Product fetched successfully",
-//       data: product,
-//     });
-//   }
-// };
-
-// const updateProduct = (req, res) => {
-//   const { id } = req.params;
-
-//   if (id >= allProducts.length) {
-//     res.status(404).json({
-//       status: "error",
-//       message: "product not found",
-//     });
-//     return;
-//   }
-//   const newProduct = req.body;
-
-//   allProducts[id] = newProduct;
-//   console.log(allProducts);
-
-//   res.status(200).json({
-//     status: "success",
-//     message: "product edited successfully",
-//     data: allProducts[id],
-//   });
-// };
-
-// const deleteProduct = (req, res) => {
-//   const { id } = req.params;
-//   if (id >= allProducts.length) {
-//     res.status(404).json({
-//       status: "error",
-//       message: "product not found",
-//     });
-//     return;
-//   }
-//   allProducts.splice(id, 1);
-//   console.log(allProducts);
-//   res.status(204).json({
-//     status: "success",
-//     message: "product deleted successfully",
-//   });
-// };
-
-// Routes
-// app
-//     .route("/products")
-//     .get(getAllProducts)
-//     .post(createProduct);
-// app
-//   .route("/products/:id")
-//   .get(getProductById)
-//   .put(updateProduct)
-//   .delete(deleteProduct);
-
+app.use(cors({                 //for frontend & backend connection.)
+  origin : ["http://localhost:5500", "http://127.0.0.1:5500"],
+  credentials : true,
+}));
   
 app.use("/api/v1/foods", foodRoutes);
 app.use("/api/v1/auth",authRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
-
+const globalErrorHandler = require('./controllers/errorController');
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  //console.log("server is running on port" +port)
-
 });
-
-//(req,res)=>{
-  //  if(req.params.id>=allProducts.length){
-    //    res.status(404).json({
-      //      status:'error',
-        //    message:'product not found',
-        //})
-        //return;
-    //} else{
-      //  console.log(req.params);
-        //const id = req.params.id;
-        //const product = allProducts[id];
-        //res.status(200).json({
-          //  status:'success',
-            //message:'Data fetched succesfully',
-            //data:product
-        //})
-    //}
-    //const { id } = req.params;
-    //const product = allProducts[id];
-   // res.status(200).json({
-     //   status: 'success',
-      ////  message:'product fetched succesfully',
-       // data:product
-   // })
-
-//});

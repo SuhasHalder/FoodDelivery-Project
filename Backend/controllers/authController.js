@@ -25,46 +25,71 @@ const createSendToken = (user, statusCode, res) => {
     user.password = undefined;
 
     res.status(statusCode).json({
-        status: "success",
+        success: "success",
         token,
         data: {
             user
         }
     });
+
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-    if(!req.body.name || !req.body.email || !req.body.password) {
-        return next(new AppError("Missing required fields",400));
-    }
-    const user = await User.findOne({email: req.body.email});
-    if(user) {
-        return next(new AppError("User already exists",400));
-    }
-    const newUser = await User.create({
-      name : req.body.name,
-      email : req.body.email,
-      password : req.body.password
-    });
-   createSendToken(newUser, 201, res);
+  const { name, email, phone, password } = req.body;
 
+if (!name || !email || !phone || !password) {
+  return next(new AppError("Missing required fields", 400));
+}
+
+const existingUser = await User.findOne({ email });
+if (existingUser) {
+  return next(new AppError("User already exists", 400));
+}
+
+const newUser = await User.create({
+  name,
+  email,
+  phone,
+  password
 });
+
+  // ADD THIS LINE TO CHECK IF PASSWORD IS HASHED
+  console.log("Saved user password (should be hashed):", newUser.password);
+
+  createSendToken(newUser, 201, res);
+});
+
+
 
 exports.login = catchAsync(async (req, res, next) => {
-        const { email, password } = req.body;
-        if(!email || !password) {
-            return next(new AppError("Missing required fields",400));
-        }
-        const user = await User.findOne({email}).select("+password");
-        if(!user) {
-            return next(new AppError("Invalid email or password",401));
-        }
-        const isCorrect = await user.correctPassword(password, user.password);
-        if(!isCorrect) {
-            return next(new AppError("Invalid email or password",401));
-        }
-        createSendToken(user, 200, res);
+  const { email, password } = req.body;
+  console.log("Login attempt:", { email, password });
+
+  if (!email || !password) {
+    return next(new AppError("Missing required fields", 400));
+  }
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    console.log("User not found");
+    return next(new AppError("Invalid email or password", 401));
+  }
+
+  console.log("Stored hashed password:", user.password);
+
+  const isCorrect = await user.correctPassword(password, user.password);
+
+  console.log("Password match result:", isCorrect);
+
+  if (!isCorrect) {
+    console.log("Password does not match");
+    return next(new AppError("Invalid email or password", 401));
+  }
+
+  createSendToken(user, 200, res);
 });
+
 
 exports.protect = catchAsync(async(req, res, next) => {
     let token;
@@ -91,7 +116,7 @@ exports.protect = catchAsync(async(req, res, next) => {
 
 exports.restrictTo = (...roles) => {  //(its called factory function  for{...role}).
   return (req, res, next) => {  //return middleware function.
-    if(!resolveSoa.includes(req.user.role)){
+    if (!roles.includes(req.user.role)) {
       return next(new AppError("you are not authorized to access this resource",403));
 
     }
