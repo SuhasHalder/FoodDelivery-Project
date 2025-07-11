@@ -55,6 +55,9 @@ const restaurants = [
 // Cart functionality
 let cart = [];
 let currentUser = null;
+let allOrders = [];
+let ordersShown = 0;
+const ORDERS_PER_PAGE = 4;
 
 // DOM Elements
 const restaurantsContainer = document.getElementById('restaurants-container');
@@ -81,6 +84,9 @@ const accountSection = document.getElementById('account-section');
 const accountDetails = document.getElementById('account-details');
 const orderHistory = document.getElementById('order-history');
 
+const sidebar = document.getElementById('user-sidebar');
+const sidebarUsername = document.getElementById('user-sidebar-user-name');
+
 
 // Initialize the app
 function init() {
@@ -89,12 +95,50 @@ function init() {
   updateCartCount();
 }
 
+function toggleSidebar() {
+  sidebar.classList.toggle('open');
+}
+
+
 function updateAuthState() {
   if (currentUser) {
     loginBtn.textContent = currentUser.name || 'My Account';
     signupBtn.style.display = 'none';
-    loginBtn.onclick = () => showAccount();
+
+    loginBtn.onclick = () => {
+      sidebarUsername.textContent = currentUser.name;
+      toggleSidebar();
+    };
   }
+}
+
+function goHome() {
+  window.scrollTo(0, 0);
+  sidebar.classList.remove('open');
+}
+
+function showOrders() {
+  showAccount(); // Your existing function
+  window.scrollTo(0, accountSection.offsetTop);
+  sidebar.classList.remove('open');
+}
+
+function showAccountDetails() {
+  accountSection.style.display = 'block';
+  cartModal.style.display = 'none';
+  loginModal.style.display = 'none';
+  signupModal.style.display = 'none';
+  orderHistory.innerHTML = ''; // Hide orders
+  sidebar.classList.remove('open');
+}
+
+function signOut() {
+  currentUser = null;
+  loginBtn.textContent = 'Login';
+  signupBtn.style.display = 'inline-block';
+  sidebar.classList.remove('open');
+  showNotification('Logged out successfully');
+  accountSection.style.display = 'none';
 }
 
 function showAccount() {
@@ -108,7 +152,6 @@ function showAccount() {
     <p><strong>Email:</strong> ${currentUser.email}</p>
   `;
 
-  // Fetch orders from backend
   fetch('http://localhost:5000/api/v1/orders/user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -117,13 +160,30 @@ function showAccount() {
   .then(res => res.json())
   .then(data => {
     if (data.success && data.orders.length) {
-      orderHistory.innerHTML = data.orders.map(order => `
-        <div style="padding: 15px; border: 1px solid #ddd; margin-bottom: 15px; border-radius: 8px;">
-          <p><strong>Status:</strong> ${order.status}</p>
-          <p><strong>Total:</strong> ₹${order.total}</p>
-          <p><strong>Items:</strong> ${order.items.map(i => i.name + ' (x' + i.quantity + ')').join(', ')}</p>
-        </div>
-      `).join('');
+      allOrders = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Newest first
+      ordersShown = 0;
+
+      orderHistory.innerHTML = ''; // Clear previous orders
+
+      // Add the container and see-more button only once
+      const wrapper = document.createElement('div');
+      wrapper.id = 'order-wrapper';
+
+      const orderList = document.createElement('div');
+      orderList.id = 'order-list';
+      wrapper.appendChild(orderList);
+
+      const seeMoreBtn = document.createElement('button');
+      seeMoreBtn.id = 'see-more-orders';
+      seeMoreBtn.className = 'btn btn-outline';
+      seeMoreBtn.style.marginTop = '15px';
+      seeMoreBtn.textContent = 'See More Orders';
+      seeMoreBtn.onclick = renderOrderBatch;
+      wrapper.appendChild(seeMoreBtn);
+
+      orderHistory.appendChild(wrapper);
+
+      renderOrderBatch(); // Show first 4
     } else {
       orderHistory.innerHTML = `<p>No orders found.</p>`;
     }
@@ -132,8 +192,62 @@ function showAccount() {
     orderHistory.innerHTML = `<p>Error loading orders</p>`;
     console.error(err);
   });
+
+  sidebar.classList.remove('active'); // Close sidebar
 }
 
+function renderOrderBatch() {
+  const ORDER_LIMIT = 4;
+  const orderList = document.getElementById('order-list');
+  const seeMoreBtn = document.getElementById('see-more-orders');
+
+  const remaining = allOrders.length - ordersShown;
+  const nextBatch = allOrders.slice(ordersShown, ordersShown + ORDER_LIMIT);
+
+  nextBatch.forEach(order => {
+    const orderTime = new Date(order.createdAt);
+    const now = new Date();
+    const diffInMs = now - orderTime;
+    const canCancel = (order.status === 'Placed') && (diffInMs <= 3600000); // 1 hour
+
+    const orderDiv = document.createElement('div');
+    orderDiv.style.cssText = 'padding: 15px; border: 1px solid #ddd; margin-bottom: 15px; border-radius: 8px;';
+    orderDiv.innerHTML = `
+      <p><strong>Status:</strong> ${order.status}</p>
+      <p><strong>Total:</strong> ₹${order.total}</p>
+      <p><strong>Items:</strong> ${order.items.map(i => i.name + ' (x' + i.quantity + ')').join(', ')}</p>
+      ${canCancel ? `<button class="btn btn-clear" onclick="cancelOrder('${order._id}')">Cancel Order</button>` : ''}
+    `;
+
+    orderList.appendChild(orderDiv);
+  });
+
+  ordersShown += ORDER_LIMIT;
+
+  // If all orders loaded, remove the button
+  if (ordersShown >= allOrders.length && seeMoreBtn) {
+    seeMoreBtn.remove();
+  }
+}
+
+function cancelOrder(orderId) {
+  fetch('http://localhost:5000/api/v1/orders/cancel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      showNotification(data.message);
+      if (data.success) {
+        showAccount(); // Refresh orders
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showNotification('Error cancelling order');
+    });
+}
 
 // Render restaurants to the page
 function renderRestaurants() {
@@ -174,6 +288,7 @@ function renderRestaurants() {
     });
   });
 }
+
 
 // Add item to cart
 function addToCart(id) {
@@ -284,9 +399,16 @@ function setupEventListeners() {
     renderCartItems();
     cartModal.style.display = 'flex';
   });
+
   loginBtn.addEventListener('click', () => {
+  if (currentUser) {
+    sidebarUsername.textContent = currentUser.name;
+    sidebar.classList.add('open'); // show sidebar
+  } else {
     loginModal.style.display = 'flex';
+  }
   });
+
   signupBtn.addEventListener('click', () => {
     signupModal.style.display = 'flex';
   });
@@ -468,9 +590,6 @@ function signupUser() {
     });
 }
 
-
-
-
 // Update authentication state
 function updateAuthState() {
   if (currentUser) {
@@ -489,7 +608,6 @@ function clearCart() {
   showNotification('Cart cleared');
 }
 
-// Checkout
 function checkout() {
   if (cart.length === 0) {
     showNotification('Your cart is empty');
@@ -502,29 +620,75 @@ function checkout() {
     return;
   }
 
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  cartModal.style.display = 'none';
+  document.getElementById('location-modal').style.display = 'flex';
+}
+
+// I add a new function
+
+let userAddress = '';
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function saveAddress() {
+  const address = document.getElementById('address-line').value.trim();
+  if (!address) {
+    showNotification('Please enter address');
+    return;
+  }
+  userAddress = address;
+  document.getElementById('location-modal').style.display = 'none';
+  showOrderSummary();
+}
+
+function showOrderSummary() {
+  document.getElementById('summary-items').innerHTML = cart.map(item =>
+    `<p>${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}</p>`
+  ).join('');
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.getElementById('summary-total').textContent = total;
+  document.getElementById('summary-modal').style.display = 'flex';
+}
+
+function goToPayment() {
+  document.getElementById('summary-modal').style.display = 'none';
+  document.getElementById('payment-modal').style.display = 'flex';
+}
+
+function completePayment(method) {
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   fetch('http://localhost:5000/api/v1/orders/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cart, user: currentUser })
+    body: JSON.stringify({
+      cart,
+      user: currentUser,
+      address: userAddress,
+      paymentMethod: method,
+      total
+    })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      showNotification(`Order placed! Total: ₹${data.total || total}`);
-      cart = [];
-      updateCartCount();
-      cartModal.style.display = 'none';
-    } else {
-      showNotification('Checkout failed');
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    showNotification('Checkout error');
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showNotification(`Order placed via ${method}! Total ₹${data.total || total}`);
+        cart = [];
+        updateCartCount();
+        document.getElementById('payment-modal').style.display = 'none';
+      } else {
+        showNotification('Payment failed');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showNotification('Payment error');
+    });
 }
+
+
 
 
 // Initialize the app when DOM is loaded

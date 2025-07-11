@@ -29,6 +29,7 @@
       </div>
     </div>
   </header>
+
   <div class="offer-row">
     <span class="offer-message">Get Upto 50% OFF and Free Delivery on First Order! 
     <span class="promo-code">Use Code: <strong>WELLCOME-Wala</strong></span>
@@ -36,14 +37,12 @@
   </div>
 
   <!-- Hero Section -->
-  
   <section class="hero">
     <h2>Delicious Food, Delivered Fast</h2>
     <p>Order from your favorite restaurants and get it delivered to your doorstep in minutes</p>
   </section>
 
   <!-- Restaurant Filters -->
-
   <div class="filters">
     <button class="filter-btn active">All</button>
     <button class="filter-btn">Fast Delivery</button>
@@ -150,6 +149,77 @@
   </div>
 </section>
 
+<!-- Location Modal -->
+<div class="modal" id="location-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('location-modal')">&times;</span>
+    <h2>Add Delivery Address</h2>
+    <div class="form-group">
+      <label for="address-line">Address</label>
+      <input type="text" id="address-line" placeholder="123 Street, Area, City">
+    </div>
+    <button class="btn-auth" onclick="saveAddress()">Save & Continue</button>
+  </div>
+</div>
+
+<!-- Order Summary Modal -->
+<div class="modal" id="summary-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('summary-modal')">&times;</span>
+    <h2>Order Summary</h2>
+    <div id="summary-items"></div>
+    <p style="margin-top:15px;"><strong>Total Payable:</strong> ₹<span id="summary-total"></span></p>
+    <button class="btn-auth" onclick="goToPayment()">Proceed to Payment</button>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal" id="payment-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('payment-modal')">&times;</span>
+    <h2>Select Payment Method</h2>
+    
+    <div class="payment-section">
+      <h4>Recommended</h4>
+      <!-- Google Pay -->
+    <div class="payment-option" onclick="completePayment('GPay')">
+      <i class="fa-brands fa-google-pay"></i>
+      <span>Google Pay</span>
+    </div>
+
+    <!-- Paypal -->
+    <div class="payment-option" onclick="completePayment('Paypal')">
+      <i class="fa-brands fa-paypal"></i>
+      <span>Paypal</span>
+    </div>
+
+    <!-- Amazon-pay -->
+    <div class="payment-option" onclick="completePayment('Amazon-pay')">
+      <i class="fa-brands fa-amazon-pay"></i>
+      <span>Amazon-pay</span>
+    </div>
+
+    </div>
+
+    <div class="payment-section">
+      <h4>Other Options</h4>
+      <div class="payment-option" onclick="completePayment('UPI')">
+        <img src="https://static.vecteezy.com/system/resources/previews/020/009/131/original/upi-unified-payments-interface-logo-free-png.png" alt="UPI" />
+        <span>UPI ID</span>
+      </div>
+      <div class="payment-option" onclick="completePayment('Card')">
+        <img src="https://cdn-icons-png.flaticon.com/512/633/633611.png" alt="Card" />
+        <span>Credit / Debit Card</span>
+      </div>
+      <div class="payment-option" onclick="completePayment('COD')">
+        <img src="https://cdn-icons-png.flaticon.com/512/4812/4812928.png" alt="COD" />
+        <span>Cash on Delivery</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   <!-- Footer -->
   <footer>
     <div class="footer-content">
@@ -200,5 +270,7 @@
     </div>
   </footer>
   <script src="script.js"></script>
+
+
 </body>
 </html>

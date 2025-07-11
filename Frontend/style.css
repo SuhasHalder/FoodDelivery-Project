@@ -189,7 +189,7 @@ header {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 30px;
-  padding: 0 5% 60px;
+  padding: 0 5% 30px;
 }
 
 .restaurant-card {
@@ -563,4 +563,45 @@ footer {
 .offer-row .promo-code strong {
   letter-spacing: 1px;
 }
+
+
+
+
+
+.payment-section {
+  margin-top: 20px;
+}
+
+.payment-section h4 {
+  color: #444;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: 1px solid #ddd;
+}
+
+.payment-option:hover {
+  background: #e8f7ff;
+  border-color: var(--primary);
+}
+
+.payment-option img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: white;
+}
+
 
