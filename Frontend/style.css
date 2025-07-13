@@ -604,4 +604,41 @@ footer {
   background: white;
 }
 
+/* Use for back icon */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 0;
+}
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
+.modal-header-row .modal-back {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-header-row .modal-back:hover {
+  text-decoration: underline;
+}
+
+.modal-header-row .close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #666;
+}
+.modal-content {
+  padding: 30px 25px;
+}

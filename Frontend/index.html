@@ -118,7 +118,11 @@
   <!-- Cart Modal -->
   <div class="modal" id="cart-modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
+      <div class="modal-header-row">
+        <button class="modal-back" onclick="goBackFrom(this)">← Back</button>
+        <span class="close" onclick="closeModal('cart-modal')">&times;</span>
+      </div>
+
       <div class="auth-header">
         <h2>Your Cart</h2>
         <p>Review your items before checkout</p>
@@ -152,11 +156,16 @@
 <!-- Location Modal -->
 <div class="modal" id="location-modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('location-modal')">&times;</span>
+      <div class="modal-header-row">
+        <button class="modal-back" onclick="goBackFrom(this)">← Back</button>
+        <span class="close" onclick="closeModal('location-modal')">&times;</span>
+      </div>
+
     <h2>Add Delivery Address</h2>
     <div class="form-group">
       <label for="address-line">Address</label>
       <input type="text" id="address-line" placeholder="123 Street, Area, City">
+      <button onclick="autoDetectLocation()" class="btn-auth" style="margin-top: 10px;">Use My Current Location</button>
     </div>
     <button class="btn-auth" onclick="saveAddress()">Save & Continue</button>
   </div>
@@ -165,7 +174,10 @@
 <!-- Order Summary Modal -->
 <div class="modal" id="summary-modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('summary-modal')">&times;</span>
+      <div class="modal-header-row">
+        <button class="modal-back" onclick="goBackFrom(this)">← Back</button>
+        <span class="close" onclick="closeModal('summary-modal')">&times;</span>
+      </div>
     <h2>Order Summary</h2>
     <div id="summary-items"></div>
     <p style="margin-top:15px;"><strong>Total Payable:</strong> ₹<span id="summary-total"></span></p>
@@ -176,7 +188,10 @@
 <!-- Payment Modal -->
 <div class="modal" id="payment-modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('payment-modal')">&times;</span>
+    <div class="modal-header-row">
+        <button class="modal-back" onclick="goBackFrom(this)">← Back</button>
+        <span class="close" onclick="closeModal('payment-modal')">&times;</span>
+      </div>
     <h2>Select Payment Method</h2>
     
     <div class="payment-section">

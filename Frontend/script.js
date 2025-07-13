@@ -49,8 +49,19 @@ const restaurants = [
     deliveryTime: "30 min",
     price: "₹180 for one",
     image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-  }
+  },
+  {
+  id: 6,
+  name: "Momo Mahal",
+  rating: 4.6,
+  cuisine: "Tibetan, Bengali-Chinese",
+  location: "Lake Market, Kolkata",
+  deliveryTime: "20 min",
+  price: "₹220 for one",
+  image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+}
 ];
+
 
 // Cart functionality
 let cart = [];
@@ -688,8 +699,58 @@ function completePayment(method) {
     });
 }
 
+function autoDetectLocation() {
+  if (!navigator.geolocation) {
+    showNotification('Geolocation not supported');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(success, error, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  });
+
+  function success(position) {
+    const { latitude, longitude } = position.coords;
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.display_name) {
+          document.getElementById('address-line').value = data.display_name;
+          showNotification('Location detected!');
+        } else {
+          showNotification('Failed to get address from coordinates');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        showNotification('Error fetching location info');
+      });
+  }
+
+  function error(err) {
+    console.error(err);
+    showNotification('Failed to get location: ' + err.message);
+  }
+}
+
+function goBackFrom(buttonElement) {
+  const modal = buttonElement.closest('.modal'); // get current modal
+
+  if (!modal) return;
+
+  modal.style.display = 'none';
+
+  // Check which modal it is and go to previous step
+  if (modal.id === 'summary-modal') {
+    document.getElementById('location-modal').style.display = 'flex';
+  } else if (modal.id === 'payment-modal') {
+    document.getElementById('summary-modal').style.display = 'flex';
+  } else if (modal.id === 'location-modal') {
+    cartModal.style.display = 'flex';
+  }
+}
 
 
-
-// Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
