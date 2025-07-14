@@ -753,4 +753,72 @@ function goBackFrom(buttonElement) {
 }
 
 
+// Get all necessary DOM elements
+const chatbotBtn = document.getElementById('chatbot-button');
+const chatWindow = document.getElementById('chat-window');
+const closeBtn = document.getElementById('close-chat');
+const sendBtn = document.getElementById('send-btn');
+const chatInput = document.getElementById('chat-input');
+const chatBody = document.getElementById('chat-body');
+
+// Show chatbot window when user clicks on the floating button
+chatbotBtn.addEventListener('click', () => {
+  chatWindow.style.display = 'flex';
+});
+// Close chatbot window when user clicks on the close (X) button
+closeBtn.addEventListener('click', () => {
+  chatWindow.style.display = 'none';
+});
+// Main function to handle sending the user's message
+async function handleSendMessage() {
+  const userMessage = chatInput.value.trim(); // Get input text and trim spaces
+  if (!userMessage) return; // If empty, do nothing
+
+  // Show user's message immediately in the chat
+  appendMessage("You", userMessage, "user-message");
+
+  chatInput.value = ""; // Clear the input box
+
+  // Simulate typing delay (e.g. 1 second) before bot replies
+  setTimeout(async () => {
+    try {
+      // Send the user's message to backend API
+      const res = await fetch("http://localhost:5000/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage })
+      });
+
+      const data = await res.json(); // Parse backend response
+
+      // Show chatbot's reply in the chat
+      appendMessage("Bot", data.reply, "bot-message");
+    } catch (err) {
+      // Show error if backend not reachable
+      appendMessage("Bot", "Error connecting to chatbot server.", "bot-message");
+      console.error("Chatbot fetch error:", err);
+    }
+  }, 1000); // 1000ms = 1 second delay
+}
+// Event listener for Send Button click
+sendBtn.addEventListener('click', handleSendMessage);
+// Event listener for Enter key press (inside chat input box)
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault(); // Prevent default form submission or line break
+    handleSendMessage(); // Call the same function as Send button
+  }
+});
+// Function to append messages to the chat window
+function appendMessage(sender, message, className) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", className); // Add styles (user/bot)
+  msg.innerHTML = `<strong>${sender}:</strong> ${message}`; // Show who said it
+  chatBody.appendChild(msg); // Add to chat area
+  chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+}
+
+
+
+
 document.addEventListener('DOMContentLoaded', init);

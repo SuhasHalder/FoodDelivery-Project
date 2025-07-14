@@ -5,6 +5,9 @@ const foodRoutes = require("./routes/foodRoutes");
 const authRoutes = require("./routes/authRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const orderRoutes = require('./routes/orderRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+
+
 const morgan = require("morgan")
 require("dotenv").config();
 
@@ -26,6 +29,8 @@ app.use("/api/v1/foods", foodRoutes);
 app.use("/api/v1/auth",authRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use("/api/chat", chatRoutes);
+
 
 const globalErrorHandler = require('./controllers/errorController');
 app.use(globalErrorHandler);
