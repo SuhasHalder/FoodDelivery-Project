@@ -2,19 +2,19 @@
 const restaurants = [
   {
     id: 1,
-    name: "Spice Delight",
-    rating: 4.5,
-    cuisine: "North Indian, Chinese",
-    location: "Esplanade, Kolkata",
-    deliveryTime: "30 min",
-    price: "₹200 for one",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    name: "Veg-Momo",
+    rating: 4.6,
+    cuisine: "Momo Mahal, Bengali-Chinese",
+    location: "Lake Market, Kolkata",
+    deliveryTime: "20 min",
+    price: "₹220 for one",
+    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
   {
     id: 2,
-    name: "Burger Hub",
+    name: "Burger",
     rating: 4.2,
-    cuisine: "Burgers, Fast Food",
+    cuisine: "Burger Hub, Fast Food",
     location: "Karunamoyee",
     deliveryTime: "25 min",
     price: "₹150 for one",
@@ -22,9 +22,9 @@ const restaurants = [
   },
   {
     id: 3,
-    name: "Pizza Palace",
+    name: "Cheese Pizza",
     rating: 4.7,
-    cuisine: "Pizzas, Italian",
+    cuisine: "Pizza Palace, Italian",
     location: "Central Park, Salt Lake",
     deliveryTime: "35 min",
     price: "₹250 for one",
@@ -32,9 +32,9 @@ const restaurants = [
   },
   {
     id: 4,
-    name: "Sushi Corner",
+    name: "Sushi",
     rating: 4.4,
-    cuisine: "Japanese, Sushi",
+    cuisine: "Sushi Corner, Japanese",
     location: "New Town, Kolkata",
     deliveryTime: "40 min",
     price: "₹350 for one",
@@ -42,24 +42,24 @@ const restaurants = [
   },
   {
     id: 5,
-    name: "Chinese Wok",
+    name: "Chicken Wings",
     rating: 4.1,
-    cuisine: "Chinese, Asian",
+    cuisine: "Chinese Wok, Chinese",
     location: "City Centre, Kolkata",
     deliveryTime: "30 min",
     price: "₹180 for one",
-    image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+    image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
   },
   {
-  id: 6,
-  name: "Momo Mahal",
-  rating: 4.6,
-  cuisine: "Tibetan, Bengali-Chinese",
-  location: "Lake Market, Kolkata",
-  deliveryTime: "20 min",
-  price: "₹220 for one",
-  image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-}
+    id: 6,
+    name: "Korean rice cakes",
+    rating: 4.5,
+    cuisine: "Korean Food",
+    location: "Esplanade, Kolkata",
+    deliveryTime: "30 min",
+    price: "₹200 for one",
+    image: "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=400&q=80"
+    }
 ];
 
 
