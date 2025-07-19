@@ -241,8 +241,31 @@ function renderOrderBatch() {
   }
 }
 
+// function cancelOrder(orderId) {
+//   fetch('http://localhost:5000/api/v1/orders/cancel', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ orderId })
+//   })
+//     .then(res => res.json())
+//     .then(data => {
+//       showNotification(data.message);
+//       if (data.success) {
+//         showAccount(); // Refresh orders
+//       }
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       showNotification('Error cancelling order');
+//     });
+// }
 function cancelOrder(orderId) {
-  fetch('http://localhost:5000/api/v1/orders/cancel', {
+  // Automatically choose the correct backend URL
+  const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://food-delivery-project-beryl.vercel.app';
+
+  fetch(`${BASE_URL}/api/v1/orders/cancel`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ orderId })
@@ -251,7 +274,7 @@ function cancelOrder(orderId) {
     .then(data => {
       showNotification(data.message);
       if (data.success) {
-        showAccount(); // Refresh orders
+        showAccount(); // Refresh UI
       }
     })
     .catch(err => {
@@ -515,6 +538,45 @@ function searchRestaurants() {
 }
 
 // Login user
+// function loginUser() {
+//   const email = document.getElementById('login-email').value;
+//   const password = document.getElementById('login-password').value;
+
+//   if (!email || !password) {
+//     showNotification('Please fill in all fields');
+//     return;
+//   }
+
+//   fetch('http://localhost:5000/api/v1/auth/login', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     credentials: 'include', //Required if backend sets cookies
+//     body: JSON.stringify({ email, password })
+//   })
+//     .then(async res => {
+//       const data = await res.json();
+//       console.log("Full Login Response:", data);
+//       console.log("HTTP Status:", res.status);
+
+//       if (!res.ok || !data.success) {
+//         console.error("Login backend error:", data.message);
+//         showNotification(data.message || 'Login failed');
+//         return;
+//       }
+
+//       currentUser = data.data.user;
+//       showNotification('Login successful!');
+//       loginModal.style.display = 'none';
+//       updateAuthState();
+//     })
+//     .catch(err => {
+//       console.error('Login fetch error:', err);
+//       showNotification('Network or server error');
+//     });
+// }
+
 function loginUser() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
@@ -524,12 +586,17 @@ function loginUser() {
     return;
   }
 
-  fetch('http://localhost:5000/api/v1/auth/login', {
+  // Automatically choose backend URL based on environment
+  const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://food-delivery-project-beryl.vercel.app';
+
+  fetch(`${BASE_URL}/api/v1/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    credentials: 'include', //Required if backend sets cookies
+    credentials: 'include', // Required if backend sets cookies
     body: JSON.stringify({ email, password })
   })
     .then(async res => {
@@ -555,6 +622,51 @@ function loginUser() {
 }
 
 // Signup user
+// function signupUser() {
+//   const name = document.getElementById('signup-name').value;
+//   const email = document.getElementById('signup-email').value;
+//   const phone = document.getElementById('signup-phone').value;
+//   const password = document.getElementById('signup-password').value;
+//   const confirm = document.getElementById('signup-confirm').value;
+
+//   if (!name || !email || !phone || !password || !confirm) {
+//     showNotification('Please fill in all fields');
+//     return;
+//   }
+
+//   if (password !== confirm) {
+//     showNotification('Passwords do not match');
+//     return;
+//   }
+
+//   fetch('http://localhost:5000/api/v1/auth/signup', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     credentials: 'include', // This is REQUIRED if your backend sends cookies
+//     body: JSON.stringify({ name, email, phone, password })
+//   })
+//     .then(async res => {
+//       const data = await res.json();
+//       console.log("Full Signup Response:", data);
+//       console.log("HTTP Status:", res.status);
+
+//       if (!res.ok || !data.success) {
+//         // Log and show backend error
+//         console.error("Signup backend error:", data.message);
+//         showNotification(data.message || 'Signup failed');
+//         return;
+//       }
+
+//       currentUser = data.data.user;
+//       showNotification('Account created successfully!');
+//       signupModal.style.display = 'none';
+//       updateAuthState();
+//     })
+//     .catch(err => {
+//       console.error('Signup fetch error:', err);
+//       showNotification('Network or server error');
+//     });
+// }
 function signupUser() {
   const name = document.getElementById('signup-name').value;
   const email = document.getElementById('signup-email').value;
@@ -572,7 +684,12 @@ function signupUser() {
     return;
   }
 
-  fetch('http://localhost:5000/api/v1/auth/signup', {
+  // Automatically choose backend URL
+  const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://food-delivery-project-beryl.vercel.app';
+
+  fetch(`${BASE_URL}/api/v1/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include', // This is REQUIRED if your backend sends cookies
@@ -600,6 +717,7 @@ function signupUser() {
       showNotification('Network or server error');
     });
 }
+
 
 // Update authentication state
 function updateAuthState() {
@@ -668,10 +786,45 @@ function goToPayment() {
   document.getElementById('payment-modal').style.display = 'flex';
 }
 
+// function completePayment(method) {
+//   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+//   fetch('http://localhost:5000/api/v1/orders/checkout', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({
+//       cart,
+//       user: currentUser,
+//       address: userAddress,
+//       paymentMethod: method,
+//       total
+//     })
+//   })
+//     .then(res => res.json())
+//     .then(data => {
+//       if (data.success) {
+//         showNotification(`Order placed via ${method}! Total ₹${data.total || total}`);
+//         cart = [];
+//         updateCartCount();
+//         document.getElementById('payment-modal').style.display = 'none';
+//       } else {
+//         showNotification('Payment failed');
+//       }
+//     })
+//     .catch(err => {
+//       console.error(err);
+//       showNotification('Payment error');
+//     });
+// }
 function completePayment(method) {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  fetch('http://localhost:5000/api/v1/orders/checkout', {
+  // Automatically choose backend URL
+  const BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://food-delivery-project-beryl.vercel.app';
+
+  fetch(`${BASE_URL}/api/v1/orders/checkout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -698,6 +851,7 @@ function completePayment(method) {
       showNotification('Payment error');
     });
 }
+
 
 function autoDetectLocation() {
   if (!navigator.geolocation) {
@@ -770,20 +924,51 @@ closeBtn.addEventListener('click', () => {
   chatWindow.style.display = 'none';
 });
 // Main function to handle sending the user's message
+// async function handleSendMessage() {
+//   const userMessage = chatInput.value.trim(); // Get input text and trim spaces
+//   if (!userMessage) return; // If empty, do nothing
+
+//   // Show user's message immediately in the chat
+//   appendMessage("You", userMessage, "user-message");
+
+//   chatInput.value = ""; // Clear the input box
+
+//   // Simulate typing delay (e.g. 1 second) before bot replies
+//   setTimeout(async () => {
+//     try {
+//       // Send the user's message to backend API
+//       const res = await fetch("http://localhost:5000/api/chat", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ message: userMessage })
+//       });
+
+//       const data = await res.json(); // Parse backend response
+
+//       // Show chatbot's reply in the chat
+//       appendMessage("Bot", data.reply, "bot-message");
+//     } catch (err) {
+//       // Show error if backend not reachable
+//       appendMessage("Bot", "Error connecting to chatbot server.", "bot-message");
+//       console.error("Chatbot fetch error:", err);
+//     }
+//   }, 1000); // 1000ms = 1 second delay
+// }
 async function handleSendMessage() {
   const userMessage = chatInput.value.trim(); // Get input text and trim spaces
   if (!userMessage) return; // If empty, do nothing
 
-  // Show user's message immediately in the chat
-  appendMessage("You", userMessage, "user-message");
+  appendMessage("You", userMessage, "user-message"); // Show user's message
+  chatInput.value = ""; // Clear input box
 
-  chatInput.value = ""; // Clear the input box
-
-  // Simulate typing delay (e.g. 1 second) before bot replies
   setTimeout(async () => {
     try {
-      // Send the user's message to backend API
-      const res = await fetch("http://localhost:5000/api/chat", {
+      // Smart backend URL switch: local or Vercel
+      const BASE_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:5000'
+        : 'https://food-delivery-project-beryl.vercel.app';
+
+      const res = await fetch(`${BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage })
@@ -791,15 +976,14 @@ async function handleSendMessage() {
 
       const data = await res.json(); // Parse backend response
 
-      // Show chatbot's reply in the chat
-      appendMessage("Bot", data.reply, "bot-message");
+      appendMessage("Bot", data.reply, "bot-message"); // Show bot reply
     } catch (err) {
-      // Show error if backend not reachable
       appendMessage("Bot", "Error connecting to chatbot server.", "bot-message");
       console.error("Chatbot fetch error:", err);
     }
-  }, 1000); // 1000ms = 1 second delay
+  }, 1000); // 1 second delay
 }
+
 // Event listener for Send Button click
 sendBtn.addEventListener('click', handleSendMessage);
 // Event listener for Enter key press (inside chat input box)
