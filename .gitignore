@@ -1,6 +1,6 @@
 # BACKEND - IGNORE
-Backend/node_modules/
-Backend/.env
+server/node_modules/
+server/.env
 
 # FRONTEND - IGNORE
 
