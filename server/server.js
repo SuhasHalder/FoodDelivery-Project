@@ -31,6 +31,12 @@ app.use("/api/v1/bookings", bookingRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use("/api/chat", chatRoutes);
 
+app.get('/',(req,res)=>{
+  res.send({
+    activeStatus: true,
+    error: false,
+  })
+})
 
 const globalErrorHandler = require('./controllers/errorController');
 app.use(globalErrorHandler);
