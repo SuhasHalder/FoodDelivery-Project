@@ -21,7 +21,7 @@ const PORT = process.env.PORT;
 connectDB();
 
 app.use(cors({                 //for frontend & backend connection.)
-  origin : ["http://localhost:5500", "http://127.0.0.1:5500", "https://deailyfood-food-delivery.netlify.app/"],
+  origin : ["http://localhost:5500", "http://127.0.0.1:5500", "https://deailyfood-food-delivery.netlify.app"],
   credentials : true,
 }));
   
