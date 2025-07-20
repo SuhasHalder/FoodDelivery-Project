@@ -134,6 +134,63 @@ function showOrders() {
   sidebar.classList.remove('open');
 }
 
+
+
+async function showUserOrders() {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const orderDetailsContainer = document.getElementById('order-details');
+  orderDetailsContainer.innerHTML = ''; // Clear previous orders
+
+  if (!token || !user) {
+    orderDetailsContainer.innerHTML = '<p>Please log in to view your orders.</p>';
+    return;
+  }
+
+  try {
+    const res = await fetch('https://food-delivery-project-beryl.vercel.app/api/v1/order/user', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!data.orders || data.orders.length === 0) {
+      orderDetailsContainer.innerHTML = '<p>No orders found.</p>';
+      return;
+    }
+
+    data.orders.forEach(order => {
+      const orderDiv = document.createElement('div');
+      orderDiv.classList.add('order-card');
+
+      orderDiv.innerHTML = `
+        <h4>Order ID: ${order._id}</h4>
+        <p><strong>Items:</strong></p>
+        <ul>
+          ${order.orderItems.map(item => `<li>${item.name} - Qty: ${item.quantity}</li>`).join('')}
+        </ul>
+        <p><strong>Total:</strong> ₹${order.totalAmount}</p>
+        <p><strong>Placed on:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+        <hr>
+      `;
+
+      orderDetailsContainer.appendChild(orderDiv);
+    });
+
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    orderDetailsContainer.innerHTML = '<p>Error loading orders.</p>';
+  }
+}
+
+
+
+
+
+
 function showAccountDetails() {
   accountSection.style.display = 'block';
   cartModal.style.display = 'none';
@@ -163,7 +220,7 @@ function showAccount() {
     <p><strong>Email:</strong> ${currentUser.email}</p>
   `;
 
-  fetch('https://food-delivery-project-beryl.vercel.app/api/v1/orders/user-orders', {
+  fetch('https://food-delivery-project-beryl.vercel.app/api/v1/order/user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: currentUser.email })
