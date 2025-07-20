@@ -163,7 +163,7 @@ function showAccount() {
     <p><strong>Email:</strong> ${currentUser.email}</p>
   `;
 
-  fetch('http://localhost:5000/api/v1/orders/user', {
+  fetch('https://food-delivery-project-beryl.vercel.app', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: currentUser.email })
@@ -924,36 +924,6 @@ closeBtn.addEventListener('click', () => {
   chatWindow.style.display = 'none';
 });
 // Main function to handle sending the user's message
-// async function handleSendMessage() {
-//   const userMessage = chatInput.value.trim(); // Get input text and trim spaces
-//   if (!userMessage) return; // If empty, do nothing
-
-//   // Show user's message immediately in the chat
-//   appendMessage("You", userMessage, "user-message");
-
-//   chatInput.value = ""; // Clear the input box
-
-//   // Simulate typing delay (e.g. 1 second) before bot replies
-//   setTimeout(async () => {
-//     try {
-//       // Send the user's message to backend API
-//       const res = await fetch("http://localhost:5000/api/chat", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ message: userMessage })
-//       });
-
-//       const data = await res.json(); // Parse backend response
-
-//       // Show chatbot's reply in the chat
-//       appendMessage("Bot", data.reply, "bot-message");
-//     } catch (err) {
-//       // Show error if backend not reachable
-//       appendMessage("Bot", "Error connecting to chatbot server.", "bot-message");
-//       console.error("Chatbot fetch error:", err);
-//     }
-//   }, 1000); // 1000ms = 1 second delay
-// }
 async function handleSendMessage() {
   const userMessage = chatInput.value.trim(); // Get input text and trim spaces
   if (!userMessage) return; // If empty, do nothing
