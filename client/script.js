@@ -163,7 +163,7 @@ function showAccount() {
     <p><strong>Email:</strong> ${currentUser.email}</p>
   `;
 
-  fetch('https://food-delivery-project-beryl.vercel.app', {
+  fetch('https://food-delivery-project-beryl.vercel.app/api/v1/orders/user-orders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: currentUser.email })
